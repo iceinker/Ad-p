@@ -24,7 +24,7 @@
   "devDependencies": {
     "@eslint/js": "^9.32.0",
     "@types/axios": "^0.9.36",
-    "@types/react": "^19.1.9",
+    "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.21",
@@ -40,7 +40,10 @@
   },
   "compilerOptions": {
     "target": "ESNext",
-    "lib": ["DOM", "ESNext"],
+    "lib": [
+      "DOM",
+      "ESNext"
+    ],
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "module": "ESNext",
@@ -50,5 +53,4 @@
     "strict": true,
     "skipLibCheck": true
   }
-  
 }

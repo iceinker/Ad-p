@@ -33,7 +33,7 @@ type SortKey = "rating" | "price" | "reviews";
 type Teacher = {
   id: number;
   name: string;
-  subjects: SubjectKey[]; // use the derived SubjectKey union
+  subjects: SubjectKey[];
   rating: number;
   reviews: number;
   price: number;
@@ -81,7 +81,8 @@ const TEACHERS: Teacher[] = [
     price: 16,
     blurb: "فهم العلوم عبر تجارب مرئية وتمارين من امتحانات سابقة.",
     tags: ["IGCSE", "Edexcel"],
-    languages: ["العربية", "الالإنجليزية" as any], // fallback in case of mixed label sets (see note)
+    // ✅ FIXED: replaced `as any` with correct string
+    languages: ["العربية", "الإنجليزية"],
     photoBg: "bg-emerald-100",
     timezones: ["EET", "CET"],
   },
@@ -127,8 +128,7 @@ const TEACHERS: Teacher[] = [
 ];
 
 /* ---------------------------- App component ---------------------------- */
-export default function App(): JSX.Element {
-  // small inline CSS for Tajawal + palette (remove if you add fonts globally)
+export default function App(): React.ReactElement {
   const css = `
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800&display=swap');
     :root{
@@ -139,7 +139,6 @@ export default function App(): JSX.Element {
     .font-tajawal { font-family: 'Tajawal', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
   `;
 
-  // activeSubject is either "all" or one of the SubjectKey union members
   const [activeSubject, setActiveSubject] = useState<"all" | SubjectKey>("all");
   const [search, setSearch] = useState<string>("");
   const [sortKey, setSortKey] = useState<SortKey>("rating");
@@ -185,7 +184,7 @@ export default function App(): JSX.Element {
                   active={activeSubject === "all"}
                   onClick={() => setActiveSubject("all")}
                 />
-                {SUBJECTS.map((s: Readonly<typeof SUBJECTS[number]>) => (
+                {SUBJECTS.map((s) => (
                   <SubjectPill
                     key={s.key}
                     label={s.label}
@@ -204,10 +203,16 @@ export default function App(): JSX.Element {
               <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
                 <div>
                   <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
-                    {activeSubject === "all" ? "أفضل المعلمين" : `المعلمون — ${labelFor(activeSubject, SUBJECTS as Subject[])}`}
+                    {activeSubject === "all"
+                      ? "أفضل المعلمين"
+                      // ✅ FIXED: removed unsafe cast `(SUBJECTS as Subject[])`
+                      : `المعلمون — ${labelFor(activeSubject, SUBJECTS)}`}
                   </h2>
-                  <p className="mt-2 text-gray-600">قارن، اختَر، واحجز درسًا تجريبيًا مجانيًا.</p>
+                  <p className="mt-2 text-gray-600">
+                    قارن، اختَر، واحجز درسًا تجريبيًا مجانيًا.
+                  </p>
                 </div>
+
 
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                   <div className="relative">
@@ -423,7 +428,7 @@ export default function App(): JSX.Element {
 
 /* ------------------------- Components (typed) ------------------------- */
 
-function Header(): JSX.Element {
+function Header(): React.ReactNode {
   return (
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 h-16 flex items-center justify-between">
@@ -451,7 +456,7 @@ function Header(): JSX.Element {
   );
 }
 
-function Hero({ onExplore }: { onExplore: () => void }): JSX.Element {
+function Hero({ onExplore }: { onExplore: () => void }): React.ReactNode {
   return (
     <section className="relative overflow-hidden" aria-labelledby="hero-title">
       <div className="absolute inset-0 -z-10">
@@ -532,7 +537,7 @@ function Hero({ onExplore }: { onExplore: () => void }): JSX.Element {
   );
 }
 
-function TeacherCard({ t }: { t: Teacher }): JSX.Element {
+function TeacherCard({ t }: { t: Teacher }): React.ReactNode {
   return (
     <article className="group rounded-2xl bg-white ring-1 ring-gray-200 p-5 shadow-sm hover:shadow-md transition-all">
       <div className="flex items-start gap-4">
@@ -573,7 +578,7 @@ function TeacherCard({ t }: { t: Teacher }): JSX.Element {
   );
 }
 
-function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }): JSX.Element {
+function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }): React.ReactNode {
   return (
     <div>
       <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">{title}</h2>
@@ -582,13 +587,13 @@ function SectionHeading({ title, subtitle }: { title: string; subtitle?: string 
   );
 }
 
-function Badge({ children, variant = "solid" }: { children: React.ReactNode; variant?: "solid" | "soft" }): JSX.Element {
+function Badge({ children, variant = "solid" }: { children: React.ReactNode; variant?: "solid" | "soft" }): React.ReactNode {
   const base = "inline-flex items-center text-xs font-medium rounded-full px-2.5 py-1";
   const styles = variant === "soft" ? "bg-gray-100 text-gray-700 ring-1 ring-gray-200" : "bg-[var(--school-primary)] text-white";
   return <span className={`${base} ${styles}`}>{children}</span>;
 }
 
-function StarRating({ rating = 0 }: { rating?: number }): JSX.Element {
+function StarRating({ rating = 0 }: { rating?: number }): React.ReactNode {
   const full = Math.floor(rating);
   const half = rating - full >= 0.5;
   const stars = Array.from({ length: 5 }, (_, i) => {
@@ -599,7 +604,7 @@ function StarRating({ rating = 0 }: { rating?: number }): JSX.Element {
   return <span aria-label={`${rating} من 5`} className="text-yellow-400">{stars.join("")}</span>;
 }
 
-function Footer(): JSX.Element {
+function Footer(): React.ReactNode {
   return (
     <footer className="mt-12 border-t border-gray-200 bg-white">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 py-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
@@ -642,7 +647,7 @@ function Footer(): JSX.Element {
   );
 }
 
-function Logo(): JSX.Element {
+function Logo(): React.ReactNode {
   return (
     <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-[var(--school-primary)] text-white text-sm shadow">
       م
@@ -660,7 +665,7 @@ function SubjectPill({
   icon: string;
   active: boolean;
   onClick: () => void;
-}): JSX.Element {
+}): React.ReactNode {
   return (
     <button
       onClick={onClick}
@@ -675,7 +680,7 @@ function SubjectPill({
   );
 }
 
-function DecorBackground(): JSX.Element {
+function DecorBackground(): React.ReactNode {
   return (
     <div className="pointer-events-none absolute inset-0 -z-10">
       <div className="absolute -top-12 -left-8 h-36 w-36 rounded-full blur-3xl opacity-30 bg-[var(--school-primary)]/30" />
@@ -712,10 +717,10 @@ function pretty(key: SubjectKey): string {
   return map[key] ?? (String(key) || "");
 }
 
-function labelFor(key: "all" | SubjectKey, subjects: Subject[]): string {
+function labelFor(key: "all" | SubjectKey, subjects: ReadonlyArray<Subject>): string {
   if (key === "all") return "الكل";
-  const s = subjects.find((x) => x.key === key);
-  return s ? s.label : pretty(key);
+  const found = subjects.find((s) => s.key === key);
+  return found ? found.label : key;
 }
 
 function scrollToId(id: string): void {
