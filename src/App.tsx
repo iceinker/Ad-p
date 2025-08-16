@@ -10,7 +10,7 @@ import React, { useMemo, useState } from "react";
  */
 
 /* ----------------------- WhatsApp Config ----------------------- */
-const WHATSAPP_NUMBER = "00966507267217";
+const WHATSAPP_NUMBER = "966507267217";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 const openWhatsApp = (message?: string): void => {
   const url = message
@@ -33,8 +33,10 @@ const SUBJECTS = [
   { key: "history", label: "التاريخ", icon: "🏺" },
   { key: "geography", label: "الجغرافيا", icon: "🗺️" },
   { key: "art", label: "الفن", icon: "🎨" },
-  { key: "daily", label: "المتابعة اليومية", icon: "📖" }, // new option
-  { key: "university", label: "مواد جامعية", icon: "🎓" }, // ✅ added as requested
+  { key: "daily", label: "المتابعة اليومية", icon: "📖" },
+  { key: "university", label: "مواد جامعية", icon: "🎓" },
+  { key: "achievement", label: "التحصيلي", icon: "📊" },
+  { key: "aptitude", label: "القدرات", icon: "🧠" },
 ] as const;
 
 type SubjectKey = typeof SUBJECTS[number]["key"];
@@ -76,7 +78,7 @@ const TEACHERS: Teacher[] = [
     subjects: ["english", "arabic", "daily", "university"],
     rating: 4.9,
     reviews: 132,
-    price: 18,
+    price: 125,
     blurb: "معلمة معتمدة في اللغة الإنجليزية، تحضير للامتحانات والمحادثة.",
     tags: ["IELTS", "TOEFL", "طلاب", "بالغين"],
     languages: ["العربية", "الإنجليزية"],
@@ -91,7 +93,7 @@ const TEACHERS: Teacher[] = [
     subjects: ["math", "physics", "daily", "university"],
     rating: 4.8,
     reviews: 98,
-    price: 22,
+    price: 125,
     blurb: "مدرس رياضيات بمقاربات بديهية ومشروحة خطوة بخطوة.",
     tags: ["IGCSE", "SAT", "مسابقات"],
     languages: ["العربية", "الإنجليزية"],
@@ -106,7 +108,7 @@ const TEACHERS: Teacher[] = [
     subjects: ["chemistry", "biology"],
     rating: 4.7,
     reviews: 76,
-    price: 16,
+    price: 125,
     blurb: "فهم العلوم عبر تجارب مرئية وتمارين من امتحانات سابقة.",
     tags: ["IGCSE", "Edexcel"],
     languages: ["العربية", "الإنجليزية"],
@@ -121,7 +123,7 @@ const TEACHERS: Teacher[] = [
     subjects: ["programming", "daily", "university"],
     rating: 5.0,
     reviews: 45,
-    price: 25,
+    price: 125,
     blurb: "مشاريع عملية من أساسيات الويب إلى الواجهات المتقدمة.",
     tags: ["React", "Node", "Python"],
     languages: ["العربية", "الإنجليزية"],
@@ -136,7 +138,7 @@ const TEACHERS: Teacher[] = [
     subjects: ["history", "geography"],
     rating: 4.6,
     reviews: 51,
-    price: 14,
+    price: 125,
     blurb: "دروس سردية مصوّرة تربط الحدث بالسياق والخرائط.",
     tags: ["IB", "GCSE"],
     languages: ["العربية", "الإنجليزية"],
@@ -151,7 +153,7 @@ const TEACHERS: Teacher[] = [
     subjects: ["art"],
     rating: 4.8,
     reviews: 29,
-    price: 12,
+    price: 125,
     blurb: "من الرسم الكلاسيكي إلى الرسم الرقمي وبناء بورتفوليو.",
     tags: ["مبتدئ", "متوسط"],
     languages: ["العربية", "الإنجليزية"],
@@ -652,7 +654,7 @@ function TeacherCard({ t }: { t: Teacher }): React.ReactNode {
 
           <div className="mt-4 flex items-center justify-between">
             <div className="text-sm text-gray-700">
-              <span className="font-semibold">${t.price}</span> / الساعة · {t.timezones.join(" ")}
+              <span className="font-semibold">SAR {t.price}</span> / الساعة · {t.timezones.join(" ")}
             </div>
             <a
               href={WHATSAPP_URL}
@@ -827,8 +829,11 @@ function pretty(key: SubjectKey): string {
     art: "الفن",
     daily: "المتابعة اليومية",
     university: "مواد جامعية",
-  } as const;
-  return map[key] ?? (String(key) || "");
+    achievement: "التحصيلي", // lowercase ✅
+    aptitude: "القدرات",     // lowercase ✅
+  };
+
+  return map[key];
 }
 
 function schoolLabel(key: SchoolType): string {
