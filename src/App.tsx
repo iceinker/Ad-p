@@ -1,13 +1,4 @@
-import React, { useMemo, useState } from "react";
-
-/**
- * Arabic / Middle-East focused one-page landing (TypeScript + Tailwind)
- * - RTL layout (dir="rtl")
- * - Arabic copy (Modern Standard Arabic)
- * - School color palette: deep blue (primary) + golden yellow (accent) + soft neutrals
- * - No resume preview; hero is a clear marketplace CTA
- * - Types added (noImplicitAny safe)
- */
+import React, { useMemo, useState } from "react"
 
 /* ----------------------- WhatsApp Config ----------------------- */
 const WHATSAPP_NUMBER = "+966597267217";
@@ -21,7 +12,7 @@ const openWhatsApp = (message?: string): void => {
   }
 };
 
-/* ----------------------- Subjects (const -> derive keys) ----------------------- */
+/* ----------------------- Subjects ----------------------- */
 const SUBJECTS = [
   { key: "math", label: "الرياضيات", icon: "➗" },
   { key: "physics", label: "الفيزياء", icon: "🧪" },
@@ -42,16 +33,11 @@ const SUBJECTS = [
 type SubjectKey = typeof SUBJECTS[number]["key"];
 type Subject = { key: SubjectKey; label: string; icon: string };
 
-/* -------------------------- Sort key union -------------------------- */
 type SortKey = "rating" | "price" | "reviews";
-
-/* -------------------------- Session / Mode types -------------------------- */
 type SessionMode = "all" | "online" | "offline";
 type TeacherMode = "online" | "offline";
-
-/* -------------------------- School type filter -------------------------- */
-type SchoolType = "international" | "ahli" | "government"; // انترناشونال / أهلي / حكومي
- type SchoolFilter = "all" | SchoolType;
+type SchoolType = "international" | "ahli" | "government"; 
+type SchoolFilter = "all" | SchoolType;
 
 /* ----------------------------- Teacher type ----------------------------- */
 type Teacher = {
@@ -67,15 +53,15 @@ type Teacher = {
   photoBg: string;
   timezones: string[];
   mode: TeacherMode;
-  school: SchoolType; // ✅ new
+  school: SchoolType; 
 };
 
 /* ------------------------------- Data -------------------------------- */
 const TEACHERS: Teacher[] = [
   {
     id: 1,
-    name: "عفاف جيلاني", // ✅ replaced
-    subjects: ["english", "arabic", "daily", "university"],
+    name: "عفاف جيلاني",
+    subjects: ["english", "arabic", "daily", "university", "achievement", "aptitude"], // ✅ added
     rating: 4.9,
     reviews: 132,
     price: 125,
@@ -89,8 +75,8 @@ const TEACHERS: Teacher[] = [
   },
   {
     id: 2,
-    name: "دينا صلاح", // ✅ replaced
-    subjects: ["math", "physics", "daily", "university"],
+    name: "دينا صلاح",
+    subjects: ["math", "physics", "daily", "university", "achievement", "aptitude"], // ✅ added
     rating: 4.8,
     reviews: 98,
     price: 125,
@@ -100,12 +86,12 @@ const TEACHERS: Teacher[] = [
     photoBg: "bg-blue-100",
     timezones: ["EET"],
     mode: "offline",
-    school: "ahli",
+    school: "international",
   },
   {
     id: 3,
     name: "ليلى فتحي",
-    subjects: ["chemistry", "biology"],
+    subjects: ["chemistry", "biology", "achievement", "aptitude"], // ✅ added
     rating: 4.7,
     reviews: 76,
     price: 125,
@@ -120,7 +106,7 @@ const TEACHERS: Teacher[] = [
   {
     id: 4,
     name: "يوسف نبيل",
-    subjects: ["programming", "daily", "university"],
+    subjects: ["programming", "daily", "university", "achievement", "aptitude"], // ✅ added
     rating: 5.0,
     reviews: 45,
     price: 125,
@@ -183,20 +169,29 @@ export default function App(): React.ReactElement {
   const [sortKey, setSortKey] = useState<SortKey>("rating");
 
   const filteredTeachers = useMemo<Teacher[]>(() => {
-    const q = search.trim().toLowerCase();
-    return TEACHERS.filter((t: Teacher) => {
-      const subjectOk = activeSubject === "all" || t.subjects.includes(activeSubject);
-      const modeOk = sessionMode === "all" || t.mode === sessionMode;
-      const schoolOk = schoolFilter === "all" || t.school === schoolFilter; // ✅
-      const hay = `${t.name} ${t.blurb} ${t.tags.join(" ")}`.toLowerCase();
-      const searchOk = q === "" || hay.includes(q);
-      return subjectOk && searchOk && modeOk && schoolOk;
-    }).sort((a: Teacher, b: Teacher) => {
-      if (sortKey === "price") return a.price - b.price;
-      if (sortKey === "reviews") return b.reviews - a.reviews;
-      return b.rating - a.rating;
-    });
-  }, [activeSubject, sessionMode, schoolFilter, search, sortKey]);
+  const q = search.trim().toLowerCase();
+  return TEACHERS.filter((t: Teacher) => {
+    // 👇 Only include teachers of the selected subject
+    const subjectOk = activeSubject === "all" || t.subjects.includes(activeSubject);
+    const modeOk = sessionMode === "all" || t.mode === sessionMode;
+    const schoolOk = schoolFilter === "all" || t.school === schoolFilter; 
+    const hay = `${t.name} ${t.blurb} ${t.tags.join(" ")}`.toLowerCase();
+    const searchOk = q === "" || hay.includes(q);
+    return subjectOk && searchOk && modeOk && schoolOk;
+  })
+  .map((t: Teacher) => {
+    // 👇 If user selected القدرات, override the price
+    if (activeSubject === "aptitude" && t.subjects.includes("aptitude")) {
+      return { ...t, price: 150 };
+    }
+    return t;
+  })
+  .sort((a: Teacher, b: Teacher) => {
+    if (sortKey === "price") return a.price - b.price;
+    if (sortKey === "reviews") return b.reviews - a.reviews;
+    return b.rating - a.rating;
+  });
+}, [activeSubject, sessionMode, schoolFilter, search, sortKey]);
 
   return (
     <div dir="rtl" className="font-tajawal" style={{ backgroundColor: "var(--school-soft)" }}>
