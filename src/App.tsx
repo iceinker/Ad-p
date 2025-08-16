@@ -10,7 +10,7 @@ import React, { useMemo, useState } from "react";
  */
 
 /* ----------------------- WhatsApp Config ----------------------- */
-const WHATSAPP_NUMBER = "05507267217";
+const WHATSAPP_NUMBER = "+966597267217";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
 const openWhatsApp = (message?: string): void => {
   const url = message
