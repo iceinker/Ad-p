@@ -21,6 +21,7 @@ const SUBJECTS = [
   { key: "history", label: "التاريخ", icon: "🏺" },
   { key: "geography", label: "الجغرافيا", icon: "🗺️" },
   { key: "art", label: "الفن", icon: "🎨" },
+  { key: "daily", label: "المتابعة اليومية", icon: "📖" }, // new option
 ] as const;
 
 type SubjectKey = typeof SUBJECTS[number]["key"];
@@ -28,6 +29,10 @@ type Subject = { key: SubjectKey; label: string; icon: string };
 
 /* -------------------------- Sort key union -------------------------- */
 type SortKey = "rating" | "price" | "reviews";
+
+/* -------------------------- Session / Mode types -------------------------- */
+type SessionMode = "all" | "online" | "offline";
+type TeacherMode = "online" | "offline";
 
 /* ----------------------------- Teacher type ----------------------------- */
 type Teacher = {
@@ -42,6 +47,7 @@ type Teacher = {
   languages: string[];
   photoBg: string;
   timezones: string[];
+  mode: TeacherMode;
 };
 
 /* ------------------------------- Data -------------------------------- */
@@ -49,7 +55,7 @@ const TEACHERS: Teacher[] = [
   {
     id: 1,
     name: "سارة محمود",
-    subjects: ["english", "arabic"],
+    subjects: ["english", "arabic", "daily"],
     rating: 4.9,
     reviews: 132,
     price: 18,
@@ -58,11 +64,12 @@ const TEACHERS: Teacher[] = [
     languages: ["العربية", "الإنجليزية"],
     photoBg: "bg-rose-100",
     timezones: ["EET", "GMT+3"],
+    mode: "online",
   },
   {
     id: 2,
     name: "عمر السيد",
-    subjects: ["math", "physics"],
+    subjects: ["math", "physics", "daily"],
     rating: 4.8,
     reviews: 98,
     price: 22,
@@ -71,6 +78,7 @@ const TEACHERS: Teacher[] = [
     languages: ["العربية", "الإنجليزية"],
     photoBg: "bg-blue-100",
     timezones: ["EET"],
+    mode: "offline",
   },
   {
     id: 3,
@@ -81,15 +89,15 @@ const TEACHERS: Teacher[] = [
     price: 16,
     blurb: "فهم العلوم عبر تجارب مرئية وتمارين من امتحانات سابقة.",
     tags: ["IGCSE", "Edexcel"],
-    // ✅ FIXED: replaced `as any` with correct string
     languages: ["العربية", "الإنجليزية"],
     photoBg: "bg-emerald-100",
     timezones: ["EET", "CET"],
+    mode: "online",
   },
   {
     id: 4,
     name: "يوسف نبيل",
-    subjects: ["programming"],
+    subjects: ["programming", "daily"],
     rating: 5.0,
     reviews: 45,
     price: 25,
@@ -98,6 +106,7 @@ const TEACHERS: Teacher[] = [
     languages: ["العربية", "الإنجليزية"],
     photoBg: "bg-indigo-100",
     timezones: ["EET"],
+    mode: "online",
   },
   {
     id: 5,
@@ -111,6 +120,7 @@ const TEACHERS: Teacher[] = [
     languages: ["العربية", "الإنجليزية"],
     photoBg: "bg-amber-100",
     timezones: ["EET"],
+    mode: "offline",
   },
   {
     id: 6,
@@ -124,6 +134,7 @@ const TEACHERS: Teacher[] = [
     languages: ["العربية", "الإنجليزية"],
     photoBg: "bg-fuchsia-100",
     timezones: ["EET"],
+    mode: "offline",
   },
 ];
 
@@ -140,6 +151,7 @@ export default function App(): React.ReactElement {
   `;
 
   const [activeSubject, setActiveSubject] = useState<"all" | SubjectKey>("all");
+  const [sessionMode, setSessionMode] = useState<SessionMode>("all");
   const [search, setSearch] = useState<string>("");
   const [sortKey, setSortKey] = useState<SortKey>("rating");
 
@@ -147,15 +159,16 @@ export default function App(): React.ReactElement {
     const q = search.trim().toLowerCase();
     return TEACHERS.filter((t: Teacher) => {
       const subjectOk = activeSubject === "all" || t.subjects.includes(activeSubject);
+      const modeOk = sessionMode === "all" || t.mode === sessionMode;
       const hay = `${t.name} ${t.blurb} ${t.tags.join(" ")}`.toLowerCase();
       const searchOk = q === "" || hay.includes(q);
-      return subjectOk && searchOk;
+      return subjectOk && searchOk && modeOk;
     }).sort((a: Teacher, b: Teacher) => {
       if (sortKey === "price") return a.price - b.price;
       if (sortKey === "reviews") return b.reviews - a.reviews;
       return b.rating - a.rating;
     });
-  }, [activeSubject, search, sortKey]);
+  }, [activeSubject, sessionMode, search, sortKey]);
 
   return (
     <div dir="rtl" className="font-tajawal" style={{ backgroundColor: "var(--school-soft)" }}>
@@ -194,6 +207,26 @@ export default function App(): React.ReactElement {
                   />
                 ))}
               </div>
+
+              {/* Session mode selector */}
+              <div className="mt-6 flex items-center gap-3">
+                <SessionPill
+                  label="الكل"
+                  active={sessionMode === "all"}
+                  onClick={() => setSessionMode("all")}
+                />
+                <SessionPill
+                  label="أونلاين"
+                  active={sessionMode === "online"}
+                  onClick={() => setSessionMode("online")}
+                />
+                <SessionPill
+                  label="حضوري"
+                  active={sessionMode === "offline"}
+                  onClick={() => setSessionMode("offline")}
+                />
+                <div className="text-sm text-gray-500 mr-3">نوع الجلسة:</div>
+              </div>
             </div>
           </section>
 
@@ -205,14 +238,12 @@ export default function App(): React.ReactElement {
                   <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
                     {activeSubject === "all"
                       ? "أفضل المعلمين"
-                      // ✅ FIXED: removed unsafe cast `(SUBJECTS as Subject[])`
                       : `المعلمون — ${labelFor(activeSubject, SUBJECTS)}`}
                   </h2>
                   <p className="mt-2 text-gray-600">
                     قارن، اختَر، واحجز درسًا تجريبيًا مجانيًا.
                   </p>
                 </div>
-
 
                 <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                   <div className="relative">
@@ -245,7 +276,7 @@ export default function App(): React.ReactElement {
                 ))}
                 {filteredTeachers.length === 0 && (
                   <div className="col-span-full rounded-2xl border border-dashed border-gray-200 p-10 text-center text-gray-600">
-                    لا يوجد معلمون مطابقون. جرِّب مادة أخرى أو كلمة بحثية مختلفة.
+                    لا يوجد معلمون مطابقون. جرِّب مادة أخرى أو نوع جلسة مختلف.
                   </div>
                 )}
               </div>
@@ -554,11 +585,12 @@ function TeacherCard({ t }: { t: Teacher }): React.ReactNode {
           </div>
           <p className="mt-1 text-sm text-gray-600">{t.blurb}</p>
 
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-3 flex flex-wrap gap-2 items-center">
             {t.subjects.map((s) => (
               <Badge key={s}>{pretty(s)}</Badge>
             ))}
             <Badge variant="soft">{t.languages.join(" · ")}</Badge>
+            <Badge variant="soft">{t.mode === "online" ? "أونلاين" : "حضوري"}</Badge>
           </div>
 
           <div className="mt-4 flex items-center justify-between">
@@ -575,6 +607,27 @@ function TeacherCard({ t }: { t: Teacher }): React.ReactNode {
         </div>
       </div>
     </article>
+  );
+}
+
+function SessionPill({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}): React.ReactNode {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-3 py-1.5 rounded-full text-sm font-medium transition
+        ${active ? "bg-[var(--school-primary)] text-white" : "bg-white ring-1 ring-gray-200 text-gray-700 hover:ring-gray-300"}`}
+      aria-pressed={active}
+    >
+      {label}
+    </button>
   );
 }
 
@@ -713,6 +766,7 @@ function pretty(key: SubjectKey): string {
     history: "التاريخ",
     geography: "الجغرافيا",
     art: "الفن",
+    daily: "المتابعة اليومية",
   };
   return map[key] ?? (String(key) || "");
 }
