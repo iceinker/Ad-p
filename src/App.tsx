@@ -9,6 +9,18 @@ import React, { useMemo, useState } from "react";
  * - Types added (noImplicitAny safe)
  */
 
+/* ----------------------- WhatsApp Config ----------------------- */
+const WHATSAPP_NUMBER = "00966507267217";
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
+const openWhatsApp = (message?: string): void => {
+  const url = message
+    ? `${WHATSAPP_URL}?text=${encodeURIComponent(message)}`
+    : WHATSAPP_URL;
+  if (typeof window !== "undefined") {
+    window.open(url, "_blank");
+  }
+};
+
 /* ----------------------- Subjects (const -> derive keys) ----------------------- */
 const SUBJECTS = [
   { key: "math", label: "الرياضيات", icon: "➗" },
@@ -22,6 +34,7 @@ const SUBJECTS = [
   { key: "geography", label: "الجغرافيا", icon: "🗺️" },
   { key: "art", label: "الفن", icon: "🎨" },
   { key: "daily", label: "المتابعة اليومية", icon: "📖" }, // new option
+  { key: "university", label: "مواد جامعية", icon: "🎓" }, // ✅ added as requested
 ] as const;
 
 type SubjectKey = typeof SUBJECTS[number]["key"];
@@ -33,6 +46,10 @@ type SortKey = "rating" | "price" | "reviews";
 /* -------------------------- Session / Mode types -------------------------- */
 type SessionMode = "all" | "online" | "offline";
 type TeacherMode = "online" | "offline";
+
+/* -------------------------- School type filter -------------------------- */
+type SchoolType = "international" | "ahli" | "government"; // انترناشونال / أهلي / حكومي
+ type SchoolFilter = "all" | SchoolType;
 
 /* ----------------------------- Teacher type ----------------------------- */
 type Teacher = {
@@ -48,14 +65,15 @@ type Teacher = {
   photoBg: string;
   timezones: string[];
   mode: TeacherMode;
+  school: SchoolType; // ✅ new
 };
 
 /* ------------------------------- Data -------------------------------- */
 const TEACHERS: Teacher[] = [
   {
     id: 1,
-    name: "سارة محمود",
-    subjects: ["english", "arabic", "daily"],
+    name: "عفاف جيلاني", // ✅ replaced
+    subjects: ["english", "arabic", "daily", "university"],
     rating: 4.9,
     reviews: 132,
     price: 18,
@@ -65,11 +83,12 @@ const TEACHERS: Teacher[] = [
     photoBg: "bg-rose-100",
     timezones: ["EET", "GMT+3"],
     mode: "online",
+    school: "international",
   },
   {
     id: 2,
-    name: "عمر السيد",
-    subjects: ["math", "physics", "daily"],
+    name: "دينا صلاح", // ✅ replaced
+    subjects: ["math", "physics", "daily", "university"],
     rating: 4.8,
     reviews: 98,
     price: 22,
@@ -79,6 +98,7 @@ const TEACHERS: Teacher[] = [
     photoBg: "bg-blue-100",
     timezones: ["EET"],
     mode: "offline",
+    school: "ahli",
   },
   {
     id: 3,
@@ -93,11 +113,12 @@ const TEACHERS: Teacher[] = [
     photoBg: "bg-emerald-100",
     timezones: ["EET", "CET"],
     mode: "online",
+    school: "international",
   },
   {
     id: 4,
     name: "يوسف نبيل",
-    subjects: ["programming", "daily"],
+    subjects: ["programming", "daily", "university"],
     rating: 5.0,
     reviews: 45,
     price: 25,
@@ -107,6 +128,7 @@ const TEACHERS: Teacher[] = [
     photoBg: "bg-indigo-100",
     timezones: ["EET"],
     mode: "online",
+    school: "ahli",
   },
   {
     id: 5,
@@ -121,6 +143,7 @@ const TEACHERS: Teacher[] = [
     photoBg: "bg-amber-100",
     timezones: ["EET"],
     mode: "offline",
+    school: "government",
   },
   {
     id: 6,
@@ -135,6 +158,7 @@ const TEACHERS: Teacher[] = [
     photoBg: "bg-fuchsia-100",
     timezones: ["EET"],
     mode: "offline",
+    school: "ahli",
   },
 ];
 
@@ -152,6 +176,7 @@ export default function App(): React.ReactElement {
 
   const [activeSubject, setActiveSubject] = useState<"all" | SubjectKey>("all");
   const [sessionMode, setSessionMode] = useState<SessionMode>("all");
+  const [schoolFilter, setSchoolFilter] = useState<SchoolFilter>("all"); // ✅
   const [search, setSearch] = useState<string>("");
   const [sortKey, setSortKey] = useState<SortKey>("rating");
 
@@ -160,15 +185,16 @@ export default function App(): React.ReactElement {
     return TEACHERS.filter((t: Teacher) => {
       const subjectOk = activeSubject === "all" || t.subjects.includes(activeSubject);
       const modeOk = sessionMode === "all" || t.mode === sessionMode;
+      const schoolOk = schoolFilter === "all" || t.school === schoolFilter; // ✅
       const hay = `${t.name} ${t.blurb} ${t.tags.join(" ")}`.toLowerCase();
       const searchOk = q === "" || hay.includes(q);
-      return subjectOk && searchOk && modeOk;
+      return subjectOk && searchOk && modeOk && schoolOk;
     }).sort((a: Teacher, b: Teacher) => {
       if (sortKey === "price") return a.price - b.price;
       if (sortKey === "reviews") return b.reviews - a.reviews;
       return b.rating - a.rating;
     });
-  }, [activeSubject, sessionMode, search, sortKey]);
+  }, [activeSubject, sessionMode, schoolFilter, search, sortKey]);
 
   return (
     <div dir="rtl" className="font-tajawal" style={{ backgroundColor: "var(--school-soft)" }}>
@@ -209,7 +235,7 @@ export default function App(): React.ReactElement {
               </div>
 
               {/* Session mode selector */}
-              <div className="mt-6 flex items-center gap-3">
+              <div className="mt-6 flex flex-wrap items-center gap-3">
                 <SessionPill
                   label="الكل"
                   active={sessionMode === "all"}
@@ -226,6 +252,31 @@ export default function App(): React.ReactElement {
                   onClick={() => setSessionMode("offline")}
                 />
                 <div className="text-sm text-gray-500 mr-3">نوع الجلسة:</div>
+              </div>
+
+              {/* School type selector */}
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                <SessionPill
+                  label="الكل"
+                  active={schoolFilter === "all"}
+                  onClick={() => setSchoolFilter("all")}
+                />
+                <SessionPill
+                  label="انترناشونال"
+                  active={schoolFilter === "international"}
+                  onClick={() => setSchoolFilter("international")}
+                />
+                <SessionPill
+                  label="أهلي"
+                  active={schoolFilter === "ahli"}
+                  onClick={() => setSchoolFilter("ahli")}
+                />
+                <SessionPill
+                  label="حكومي"
+                  active={schoolFilter === "government"}
+                  onClick={() => setSchoolFilter("government")}
+                />
+                <div className="text-sm text-gray-500 mr-3">نوع المدرسة:</div>
               </div>
             </div>
           </section>
@@ -259,6 +310,7 @@ export default function App(): React.ReactElement {
 
                   <select
                     value={sortKey}
+                    onClick={() => openWhatsApp()} // ✅ redirect on click
                     onChange={(e) => setSortKey(e.target.value as SortKey)}
                     className="rounded-full border border-gray-200 bg-white px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2"
                     aria-label="ترتيب النتائج"
@@ -292,7 +344,9 @@ export default function App(): React.ReactElement {
                   subtitle="كل ما تحتاجه لتعلّم فعال ومريح."
                 />
                 <a
-                  href="#cta"
+                  href={WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="hidden sm:inline-flex items-center px-5 py-3 rounded-full bg-[var(--school-primary)] text-white text-sm font-semibold hover:opacity-95 transition"
                 >
                   احجز درسًا تجريبيًا
@@ -477,7 +531,9 @@ function Header(): React.ReactNode {
         </nav>
 
         <a
-          href="#cta"
+          href={WHATSAPP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           className="inline-flex items-center rounded-full bg-[var(--school-primary)] text-white text-sm font-semibold px-4 py-2 hover:opacity-95 shadow-sm"
         >
           احجز درسًا
@@ -591,6 +647,7 @@ function TeacherCard({ t }: { t: Teacher }): React.ReactNode {
             ))}
             <Badge variant="soft">{t.languages.join(" · ")}</Badge>
             <Badge variant="soft">{t.mode === "online" ? "أونلاين" : "حضوري"}</Badge>
+            <Badge variant="soft">{schoolLabel(t.school)}</Badge>
           </div>
 
           <div className="mt-4 flex items-center justify-between">
@@ -598,7 +655,9 @@ function TeacherCard({ t }: { t: Teacher }): React.ReactNode {
               <span className="font-semibold">${t.price}</span> / الساعة · {t.timezones.join(" ")}
             </div>
             <a
-              href="#cta"
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center px-4 py-2 rounded-full bg-[var(--school-primary)] text-white text-sm font-semibold hover:opacity-95"
             >
               احجز درسًا تجريبيًا
@@ -767,8 +826,18 @@ function pretty(key: SubjectKey): string {
     geography: "الجغرافيا",
     art: "الفن",
     daily: "المتابعة اليومية",
-  };
+    university: "مواد جامعية",
+  } as const;
   return map[key] ?? (String(key) || "");
+}
+
+function schoolLabel(key: SchoolType): string {
+  const map: Record<SchoolType, string> = {
+    international: "انترناشونال",
+    ahli: "أهلي",
+    government: "حكومي",
+  } as const;
+  return map[key];
 }
 
 function labelFor(key: "all" | SubjectKey, subjects: ReadonlyArray<Subject>): string {
