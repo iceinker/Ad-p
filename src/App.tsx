@@ -564,7 +564,7 @@ function Hero({ onExplore }: { onExplore: () => void }): React.ReactNode {
               className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight text-gray-900"
             >
               منصة تعليمية{" "}
-              <span className="text-[var(--school-primary)]">مخصصة للمنطقة</span>
+              <span className="text-[var(--school-primary)]">مخصصة للسعودية</span>
             </h1>
 
             <p className="mt-4 text-lg text-gray-700 max-w-2xl">
