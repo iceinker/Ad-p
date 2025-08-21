@@ -75,7 +75,7 @@ const TEACHERS: Teacher[] = [
   },
   {
     id: 2,
-    name: "دينا صلاح",
+    name: "ديما عبد الله",
     subjects: ["math", "physics", "daily", "university", "achievement", "aptitude"], // ✅ added
     rating: 4.8,
     reviews: 98,
