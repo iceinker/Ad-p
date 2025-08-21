@@ -231,21 +231,28 @@ export default function App(): React.ReactElement {
   if (sessionMode === "online") {
     if (activeSubject === "aptitude" || activeSubject === "achievement") {
       return { ...t, price: 100 }; // القدرات or التحصيلي
-    }
-    if (activeSubject === "university") {
+    } else if (activeSubject === "university") {
       return { ...t, price: 125 }; // مواد جامعية
+    } else {
+      return { ...t, price: 80 }; // default online price
     }
-    return { ...t, price: 80 }; // default online price
   } 
-  
+
   // Offline or all sessions
   else {
-    if (activeSubject === "university" || activeSubject === "achievement" || activeSubject === "aptitude" && t.subjects.includes("aptitude")) {
+    // Explicit parentheses to fix precedence
+    if (
+      activeSubject === "university" ||
+      activeSubject === "achievement" ||
+      (activeSubject === "aptitude" && t.subjects.includes("aptitude"))
+    ) {
       return { ...t, price: 150 }; // القدرات offline
+    } else {
+      return t; // keep original price
     }
-    return t; // keep original price
   }
 })
+
 
   .sort((a: Teacher, b: Teacher) => {
     if (sortKey === "price") return a.price - b.price;
