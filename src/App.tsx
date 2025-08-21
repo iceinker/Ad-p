@@ -180,12 +180,26 @@ export default function App(): React.ReactElement {
     return subjectOk && searchOk && modeOk && schoolOk;
   })
   .map((t: Teacher) => {
-    // 👇 If user selected القدرات, override the price
-    if (activeSubject === "aptitude" && t.subjects.includes("aptitude")) {
-      return { ...t, price: 150 };
+  // Online session prices
+  if (sessionMode === "online") {
+    if (activeSubject === "aptitude" || activeSubject === "achievement") {
+      return { ...t, price: 100 }; // القدرات or التحصيلي
     }
-    return t;
-  })
+    if (activeSubject === "university") {
+      return { ...t, price: 125 }; // مواد جامعية
+    }
+    return { ...t, price: 80 }; // default online price
+  } 
+  
+  // Offline or all sessions
+  else {
+    if (activeSubject === "aptitude" && t.subjects.includes("aptitude")) {
+      return { ...t, price: 150 }; // القدرات offline
+    }
+    return t; // keep original price
+  }
+})
+
   .sort((a: Teacher, b: Teacher) => {
     if (sortKey === "price") return a.price - b.price;
     if (sortKey === "reviews") return b.reviews - a.reviews;
