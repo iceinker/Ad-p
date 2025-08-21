@@ -180,12 +180,23 @@ export default function App(): React.ReactElement {
     return subjectOk && searchOk && modeOk && schoolOk;
   })
   .map((t: Teacher) => {
-    // 👇 If user selected القدرات, override the price
+  // Price logic based on active subject and session mode
+  if (sessionMode === "online") {
+    if (activeSubject === "aptitude" || activeSubject === "achievement") {
+      return { ...t, price: 100 };
+    }
+    if (activeSubject === "university") {
+      return { ...t, price: 125 };
+    }
+    return { ...t, price: 80 }; // default online price
+  } else {
+    // Offline or all sessions
     if (activeSubject === "aptitude" && t.subjects.includes("aptitude")) {
       return { ...t, price: 150 };
     }
-    return t;
-  })
+    return t; // keep original price
+  }
+})
   .sort((a: Teacher, b: Teacher) => {
     if (sortKey === "price") return a.price - b.price;
     if (sortKey === "reviews") return b.reviews - a.reviews;
@@ -835,8 +846,8 @@ function pretty(key: SubjectKey): string {
     art: "الفن",
     daily: "المتابعة اليومية",
     university: "مواد جامعية",
-    achievement: "التحصيلي", // lowercase ✅
-    aptitude: "القدرات",     // lowercase ✅
+    achievement: "التحصيلي",
+    aptitude: "القدرات",
   };
 
   return map[key];
