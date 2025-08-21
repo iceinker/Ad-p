@@ -240,7 +240,7 @@ export default function App(): React.ReactElement {
   
   // Offline or all sessions
   else {
-    if (activeSubject === "university" || activeSubject === "aptitude" && t.subjects.includes("aptitude")) {
+    if (activeSubject === "university" || activeSubject === "achievement" || activeSubject === "aptitude" && t.subjects.includes("aptitude")) {
       return { ...t, price: 150 }; // القدرات offline
     }
     return t; // keep original price
