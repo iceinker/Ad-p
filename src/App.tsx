@@ -552,13 +552,19 @@ function Hero({ onExplore }: { onExplore: () => void }): React.ReactNode {
       <div className="pt-16 pb-12 px-6 sm:px-8">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-7">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 shadow-sm ring-1 ring-black/5 mb-5">
+            {/* Tagline now h2 */}
+            <h2 className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 shadow-sm ring-1 ring-black/5 mb-5 text-xs font-medium text-gray-700">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-medium text-gray-700">اعثر على معلم يناسب أهدافك</span>
-            </div>
+              اعثر على معلم يناسب أهدافك
+            </h2>
 
-            <h1 id="hero-title" className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight text-gray-900">
-              منصة تعليمية <span className="text-[var(--school-primary)]">مخصصة للمنطقة</span>
+            {/* Main Title h1 */}
+            <h1
+              id="hero-title"
+              className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight text-gray-900"
+            >
+              منصة تعليمية{" "}
+              <span className="text-[var(--school-primary)]">مخصصة للمنطقة</span>
             </h1>
 
             <p className="mt-4 text-lg text-gray-700 max-w-2xl">
@@ -580,23 +586,28 @@ function Hero({ onExplore }: { onExplore: () => void }): React.ReactNode {
               </button>
             </div>
 
+            {/* Trusted by → now h2 */}
             <div className="mt-8">
-              <p className="text-sm text-gray-500 mb-3">موثوق من قبل مؤسسات تعليمية:</p>
+              <h2 className="text-sm text-gray-500 mb-3">
+                موثوق من قبل مؤسسات تعليمية:
+              </h2>
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 items-center opacity-80">
-                {["المدرسة الدولية", "المدرسة البريطانية", "STEM مصر", "الجامعة الأمريكية", "جامعة النيل", "GUC"].map((brand) => (
-                  <div
-                    key={brand}
-                    className="h-10 rounded-lg bg-white/80 flex items-center justify-center text-xs font-semibold"
-                    aria-label={`موثوق من ${brand}`}
-                  >
-                    {brand}
-                  </div>
-                ))}
+                {["المدرسة الدولية", "المدرسة البريطانية", "STEM مصر", "الجامعة الأمريكية", "جامعة النيل", "GUC"].map(
+                  (brand) => (
+                    <div
+                      key={brand}
+                      className="h-10 rounded-lg bg-white/80 flex items-center justify-center text-xs font-semibold"
+                      aria-label={`موثوق من ${brand}`}
+                    >
+                      {brand}
+                    </div>
+                  )
+                )}
               </div>
             </div>
           </div>
 
-          {/* Hero visual simplified — not resume-like */}
+          {/* Hero visual simplified */}
           <div className="lg:col-span-5">
             <div className="relative rounded-3xl bg-white ring-1 ring-gray-200 shadow-lg p-6">
               <div className="h-44 rounded-lg bg-gradient-to-b from-gray-100 to-gray-50 flex items-center justify-center">
