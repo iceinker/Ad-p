@@ -61,7 +61,7 @@ const TEACHERS: Teacher[] = [
   {
     id: 1,
     name: "عفاف جيلاني",
-    subjects: ["english", "arabic", "daily", "university", "achievement", "aptitude"], // ✅ added
+    subjects: ["english", "arabic", "daily", "university", "achievement", "aptitude"],
     rating: 4.9,
     reviews: 132,
     price: 125,
@@ -76,7 +76,7 @@ const TEACHERS: Teacher[] = [
   {
     id: 2,
     name: "ديما عبد الله",
-    subjects: ["math", "physics", "daily", "university", "achievement", "aptitude"], // ✅ added
+    subjects: ["math", "physics", "daily", "university", "achievement", "aptitude"],
     rating: 4.8,
     reviews: 98,
     price: 125,
@@ -91,7 +91,7 @@ const TEACHERS: Teacher[] = [
   {
     id: 3,
     name: "ليلى فتحي",
-    subjects: ["chemistry", "biology", "achievement", "aptitude"], // ✅ added
+    subjects: ["chemistry", "biology", "achievement", "aptitude"],
     rating: 4.7,
     reviews: 76,
     price: 125,
@@ -106,7 +106,7 @@ const TEACHERS: Teacher[] = [
   {
     id: 4,
     name: "يوسف نبيل",
-    subjects: ["programming", "daily", "university", "achievement", "aptitude"], // ✅ added
+    subjects: ["programming", "daily", "university", "achievement", "aptitude"],
     rating: 5.0,
     reviews: 45,
     price: 125,
@@ -148,7 +148,54 @@ const TEACHERS: Teacher[] = [
     mode: "offline",
     school: "ahli",
   },
+  // ------------------- New Teachers -------------------
+  {
+    id: 7,
+    name: "سارة الشمري",
+    subjects: ["english", "achievement", "aptitude"],
+    rating: 4.9,
+    reviews: 88,
+    price: 125,
+    blurb: "متخصصة في التحضير للقدرات والتحصيلي باللغة الإنجليزية.",
+    tags: ["TOEFL", "IELTS", "طلاب"],
+    languages: ["العربية", "الإنجليزية"],
+    photoBg: "bg-pink-100",
+    timezones: ["EET", "GMT+3"],
+    mode: "online",
+    school: "international",
+  },
+  {
+    id: 8,
+    name: "أحمد الفرج",
+    subjects: ["math", "physics", "university"],
+    rating: 4.7,
+    reviews: 64,
+    price: 125,
+    blurb: "مدرس جامعي يركز على الرياضيات والفيزياء للطلاب الجامعيين.",
+    tags: ["جامعي", "تحضير", "مشاريع"],
+    languages: ["العربية", "الإنجليزية"],
+    photoBg: "bg-teal-100",
+    timezones: ["EET"],
+    mode: "online",
+    school: "ahli",
+  },
+  {
+    id: 9,
+    name: "هدى الجبلي",
+    subjects: ["chemistry", "biology", "daily"],
+    rating: 4.6,
+    reviews: 37,
+    price: 125,
+    blurb: "معلمة شغوفة بالعلوم والتجارب اليومية للطلاب.",
+    tags: ["مدرسة", "تجارب", "طلاب"],
+    languages: ["العربية"],
+    photoBg: "bg-lime-100",
+    timezones: ["EET"],
+    mode: "offline",
+    school: "government",
+  },
 ];
+
 
 /* ---------------------------- App component ---------------------------- */
 export default function App(): React.ReactElement {
@@ -193,7 +240,7 @@ export default function App(): React.ReactElement {
   
   // Offline or all sessions
   else {
-    if (activeSubject === "aptitude" && t.subjects.includes("aptitude")) {
+    if (activeSubject === "university" || activeSubject === "aptitude" && t.subjects.includes("aptitude")) {
       return { ...t, price: 150 }; // القدرات offline
     }
     return t; // keep original price
