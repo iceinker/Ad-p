@@ -516,7 +516,7 @@ function Header(): React.ReactNode {
       <div className="max-w-7xl mx-auto px-6 sm:px-8 h-16 flex items-center justify-between">
         <a href="#top" className="flex items-center gap-2 font-extrabold tracking-tight text-[var(--school-primary)]">
           <Logo />
-          <span className="text-lg">يلا ندرس</span>
+          <span className="text-lg">خطوة تعليمية</span>
         </a>
 
         <nav className="hidden md:flex items-center gap-6 text-sm text-gray-700">
@@ -731,7 +731,7 @@ function Footer(): React.ReactNode {
         <div>
           <a href="#top" className="flex items-center gap-2 font-extrabold tracking-tight text-[var(--school-primary)]">
             <Logo />
-            <span>يلا ندرس</span>
+            <span>خطوة تعليمية</span>
           </a>
           <p className="mt-3 text-gray-600">نساعد الطلاب في العثور على المعلم المناسب منذ 2025.</p>
         </div>
@@ -762,7 +762,7 @@ function Footer(): React.ReactNode {
         </div>
       </div>
 
-      <div className="px-6 sm:px-8 py-6 text-center text-xs text-gray-500">© {new Date().getFullYear()} يلا ندرس. كل الحقوق محفوظة.</div>
+      <div className="px-6 sm:px-8 py-6 text-center text-xs text-gray-500">© {new Date().getFullYear()} خطوة تعليمية. كل الحقوق محفوظة.</div>
     </footer>
   );
 }
